@@ -116,8 +116,30 @@ template <class T> class BinaryTree{
 
 int main(){
     BinaryTree<int> Arbol;
-    int men = 0;
-    // Menu
-    
+    int menu = 1, temp = 0;
+    cout << "Ingrese un valor para el root del arbol.\nValor: ";
+    cin >> temp;
+    Arbol.add_node(temp);
+    cout << endl;
+    // Menu 
+    while(menu != 0){
+        Arbol.print_node();
+        cout << "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-" << endl;
+        cout << "1. Ir a padre.\n2. Ir a 'left'.\n3. Ir a 'right'.\n4. Agregar un valor.\n0. Salir.\nOpcion: ";
+        cin >> menu;
+        cout << endl;
+        if(menu == 1){
+            Arbol.go_father();
+        } else if(menu == 2){
+            Arbol.go_left();
+        } else if(menu == 3){
+            Arbol.go_right();
+        } else if(menu == 4){
+            cout << "Ingrese un valor: ";
+            cin >> temp;
+            cout << endl;
+            Arbol.add_node(temp);
+        }
+    }
     return 0;
 }
