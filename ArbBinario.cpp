@@ -116,6 +116,7 @@ template <class T> class BinaryTree{
 
 int main(){
     BinaryTree<int> Arbol;
+    int men = 0;
     // Menu
     
     return 0;
