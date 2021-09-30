@@ -137,7 +137,7 @@ int main(){
     while(menu != 0){
         Arbol.print_node();
         cout << "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-" << endl;
-        cout << "1. Agregar un valor.\n0. Salir.\nOpcion: ";
+        cout << "1. Agregar un valor.\n2. Go father.\n3. Go left.\n4. Go right.\n0. Salir.\nOpcion: ";
         cin >> menu;
         cout << endl;
         if(menu == 1){
@@ -145,6 +145,12 @@ int main(){
             cin >> temp;
             cout << endl;
             Arbol.add_node(temp);
+        } else if(menu == 2){
+            Arbol.go_father();
+        } else if(menu == 3){
+            Arbol.go_left();
+        } else if(menu == 4){
+            Arbol.go_right();
         }
     }
     return 0;
