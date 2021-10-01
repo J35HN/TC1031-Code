@@ -103,6 +103,42 @@ template <class T> class BinaryTree{
         }
     }
 
+    // Visit
+    void visit(int opc){
+        /*
+        if(opc == 1){
+            Preorder
+        } else if(opc == 2){
+            Inorder
+        } else if(opc == 3){
+            Postorder
+        } else if(opc == 4){
+            Level by level
+        }
+        */
+    }
+
+    // Height
+    int height(){
+        int height;
+
+        return height;
+    }
+
+    // Ancestors
+    void ancestors(int dat){
+
+    }
+
+    // WhatlevelamI
+    int whatlevelamI(int dat){
+        int level;
+
+        return level;
+    }
+
+
+
     void go_left(){
         // Set current to left, unless it's null.
         if(current -> left != NULL){
