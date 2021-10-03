@@ -100,6 +100,7 @@ template <class T> class BinaryTree{
                 }
                 //cout << "Ya no soy null" << endl;
             }
+            current = root; // Current ends back at root.
         }
     }
 
@@ -127,7 +128,14 @@ template <class T> class BinaryTree{
 
     // Ancestors
     void ancestors(int dat){
-
+        this -> search_node(dat);
+        while(current -> father != NULL){
+            cout << current -> data << " -> ";
+            current = current -> father;
+            if(current -> father == NULL){
+                cout << current -> data << endl;
+            }
+        }
     }
 
     // WhatlevelamI
@@ -160,6 +168,19 @@ template <class T> class BinaryTree{
         }
     }
 
+    void search_node(T info){
+        current = root; // Current start at root.
+        while(current -> data != info){
+            if(info < current -> data){
+                current = current -> left;
+            } else {
+                current = current -> right;
+            }
+            // Fix in case there is no info in tree.
+        }
+        // Current will be set at the searched node.
+    }
+
 };
 
 int main(){
@@ -173,20 +194,31 @@ int main(){
     while(menu != 0){
         Arbol.print_node();
         cout << "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-" << endl;
-        cout << "1. Agregar un valor.\n2. Go father.\n3. Go left.\n4. Go right.\n0. Salir.\nOpcion: ";
+        cout << "1. Agregar un valor.\n2. Go father.\n3. Go left.\n4. Go right.\n5. Ancestor. \n0. Salir.\nOpcion: ";
         cin >> menu;
         cout << endl;
-        if(menu == 1){
-            cout << "Ingrese un valor: ";
-            cin >> temp;
-            cout << endl;
-            Arbol.add_node(temp);
-        } else if(menu == 2){
-            Arbol.go_father();
-        } else if(menu == 3){
-            Arbol.go_left();
-        } else if(menu == 4){
-            Arbol.go_right();
+        switch (menu){
+            case 1:
+                cout << "Ingrese un valor: ";
+                cin >> temp;
+                cout << endl;
+                Arbol.add_node(temp);
+                break;
+            case 2:
+                Arbol.go_father();
+                break;
+            case 3:
+                Arbol.go_left();
+                break;
+            case 4:
+                Arbol.go_right();
+                break;
+            case 5:
+                cout << "Ingrese el valor de un nodo para desplegar sus ancestros: ";
+                cin >> temp;
+                cout << endl;
+                Arbol.ancestors(temp);
+                break;
         }
     }
     return 0;
