@@ -1,4 +1,5 @@
 #include <iostream>
+#include <queue>
 
 using namespace std;
 
@@ -29,11 +30,13 @@ template <class T> class Node {
 template <class T> class BinaryTree{
     Node<T> *current; // Node so we can traverse the tree.
     Node<T> *root; // Node that is the root of the tree.
+    int heightTree; // Height of the tree.
 
     public:
         BinaryTree(){
             current = NULL;
             root = NULL;
+            heightTree = 0;
         }
         ~BinaryTree(){}
 
@@ -70,7 +73,7 @@ template <class T> class BinaryTree{
             root -> set_right(NULL);
             current = root;
         } else {
-            int exit = 0;
+            int exit = 0, step = 0;
             current = root; // Start at root
             while(exit == 0){
                 if(info > current -> data){ // Traverse right if info is bigger than the current node.
@@ -82,8 +85,10 @@ template <class T> class BinaryTree{
                         temp -> set_father(current);
                         current -> set_right(temp);
                         exit++;
+                        step++;
                     } else {
                         current = current -> right;
+                        step++;
                     }
                 } else { // Traverse left.
                     if(current -> left == NULL){
@@ -94,36 +99,102 @@ template <class T> class BinaryTree{
                         temp -> set_father(current);
                         current -> set_left(temp);
                         exit++;
+                        step++;
                     } else {
                         current = current -> left;
+                        step++;
                     }
                 }
-                //cout << "Ya no soy null" << endl;
             }
             current = root; // Current ends back at root.
+            // Update height of tree.
+            if(step > heightTree){
+                heightTree = step;
+            }
         }
     }
 
     // Visit
     void visit(int opc){
-        /*
+        current = root;
         if(opc == 1){
-            Preorder
+            this -> pre_order();
+            cout << endl;
         } else if(opc == 2){
-            Inorder
+            this -> in_order();
+            cout << endl;
         } else if(opc == 3){
-            Postorder
+            this -> post_order();
+            cout << endl;
         } else if(opc == 4){
-            Level by level
+            this -> levelBLevel();
+            cout << endl;
         }
-        */
+        cout << endl;
+    }
+
+    void pre_order(){
+        cout << current -> data << " ";
+        if(current -> left != NULL){
+            current = current -> left;
+            this -> pre_order();
+            current = current -> father;
+        }
+        if(current -> right != NULL){
+            current = current -> right;
+            this -> pre_order();
+            current = current -> father;
+        }
+    }
+
+    void in_order(){
+        if(current -> left != NULL){
+            current = current -> left;
+            this -> in_order();
+            current = current -> father;
+        }
+        cout << current -> data << " ";
+        if(current -> right != NULL){
+            current = current -> right;
+            this -> in_order();
+            current = current -> father;
+        }
+    }
+
+    void post_order(){
+        if(current -> left != NULL){
+            current = current -> left;
+            this -> post_order();
+            current = current -> father;
+        }
+        if(current -> right != NULL){
+            current = current -> right();
+            this -> post_order();
+            current = current -> father();
+        }
+        cout << current -> data << " ";
+    }
+
+    void levelBLevel(){
+        Node<T>* temp = new Node<T>;
+        queue<Node> q;
+        q.push(current);
+        while(!q.empty()){
+            temp = q.front();
+            q.pop();
+            cout << temp -> data << " ";
+            if(temp -> left != NULL){
+                q.push(temp->left);
+            }
+            if(temp -> right != NULL){
+                q.push(temp -> right);
+            }
+        }
     }
 
     // Height
     int height(){
-        int height;
-
-        return height;
+        return heightTree;
     }
 
     // Ancestors
@@ -205,11 +276,13 @@ int main(){
     // Menu 
     while(menu != 0){
         Arbol.print_node();
-        cout << "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-" << endl;
-        cout << "1. Agregar un valor.\n2. Go father.\n3. Go left.\n4. Go right.\n5. Ancestor.\n6. What Level\n0. Salir.\nOpcion: ";
+        cout << "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-" << endl;
+        cout << "1. Agregar un valor.\n2. Go father.\n3. Go left.\n4. Go right.\n5. Ancestor.\n6. What Level.\n7. Height.\n8. Visit.\n0. Salir.\nOpcion: ";
         cin >> menu;
         cout << endl;
         switch (menu){
+            case 0:
+                break;
             case 1:
                 cout << "Ingrese un valor: ";
                 cin >> temp;
@@ -236,6 +309,18 @@ int main(){
                 cin >> temp;
                 temp = Arbol.whatlevelamI(temp);
                 cout << "Estoy en el nivel: " << temp << endl << endl;
+                break;
+            case 7:
+                temp = Arbol.height();
+                cout << "La altura del arbol es: " << temp << "." << endl << endl;
+                break;
+            case 8:
+                cout << "[1] -> Pre-order. [2] -> In-order. [3] -> Postorder. [4] -> level by level." << endl;
+                cin >> temp;
+                Arbol.visit(temp);
+                break;
+            default:
+                cout << "Ingrese un numero valido" << endl << endl;
                 break;
         }
     }
