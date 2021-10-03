@@ -139,10 +139,18 @@ template <class T> class BinaryTree{
     }
 
     // WhatlevelamI
-    int whatlevelamI(int dat){
-        int level;
-
-        return level;
+    int whatlevelamI(int dato){
+        int level = -1;
+        this -> search_node(dato); // Set current to node that has dat.
+        while(current -> father != NULL){
+            level += 1;
+            current = current -> father;
+        }
+        if(level == -1){
+            return level;
+        } else {
+            return level+1;
+        }
     }
 
 
@@ -198,7 +206,7 @@ int main(){
     while(menu != 0){
         Arbol.print_node();
         cout << "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-" << endl;
-        cout << "1. Agregar un valor.\n2. Go father.\n3. Go left.\n4. Go right.\n5. Ancestor. \n0. Salir.\nOpcion: ";
+        cout << "1. Agregar un valor.\n2. Go father.\n3. Go left.\n4. Go right.\n5. Ancestor.\n6. What Level\n0. Salir.\nOpcion: ";
         cin >> menu;
         cout << endl;
         switch (menu){
@@ -218,10 +226,16 @@ int main(){
                 Arbol.go_right();
                 break;
             case 5:
-                cout << "Ingrese el valor de un nodo para desplegar sus ancestros: ";
+                cout << "Ingrese el valor de un nodo para imprimir sus ancestros: ";
                 cin >> temp;
                 cout << endl;
                 Arbol.ancestors(temp);
+                break;
+            case 6:
+                cout << "Ingrese el valor de un nodo para imprimir su nivel en el arbol: ";
+                cin >> temp;
+                temp = Arbol.whatlevelamI(temp);
+                cout << "Estoy en el nivel: " << temp << endl << endl;
                 break;
         }
     }
