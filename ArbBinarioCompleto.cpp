@@ -171,12 +171,16 @@ template <class T> class BinaryTree{
     void search_node(T info){
         current = root; // Current start at root.
         while(current -> data != info){
+            // In case there is no node.
+            if(current -> left == NULL && current -> right == NULL){
+                current = root; // Reset to root.
+                break;
+            }
             if(info < current -> data){
                 current = current -> left;
             } else {
                 current = current -> right;
             }
-            // Fix in case there is no info in tree.
         }
         // Current will be set at the searched node.
     }
