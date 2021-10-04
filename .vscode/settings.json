@@ -4,6 +4,8 @@
         "iostream": "cpp",
         "string": "cpp",
         "iosfwd": "cpp",
-        "ostream": "cpp"
+        "ostream": "cpp",
+        "array": "cpp",
+        "string_view": "cpp"
     }
 }

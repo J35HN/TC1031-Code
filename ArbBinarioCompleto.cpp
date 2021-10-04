@@ -9,6 +9,10 @@ template <class T> class Node {
         Node* left; // Pointer to the left son (node).
         Node* right; // Pointer to the right son (node).
         Node* father; // Pointer to father (node).
+        // queue
+        Node* next; // Pointer to the next node element
+        Node* Front; // Pointer to the front of queue
+        Node* Rear; // Pointer to the end of queue
 
         void set_data(T new_data){
             this -> data = new_data;
@@ -25,6 +29,112 @@ template <class T> class Node {
         void set_father(Node *next_father){
             this -> father = next_father;
         }
+
+
+        void set_next(Node *next_node){
+            this->next = next_node;
+        }
+
+        void set_Front(Node *front_node){
+            this -> Front = front_node;
+        }
+
+        void set_Rear(Node *rear_node){
+            this -> Rear = rear_node;
+        }
+};
+
+template <class T> class Queue{
+    Node<T> *Front;
+    Node<T> *Rear;
+    int Size;
+
+    public:
+        Queue(){
+            Front = NULL;
+            Rear = NULL;
+            Size = 0;
+        }
+
+        ~Queue(){
+        }
+
+        // Method adds info to the end of the list
+        void push(T info){
+            if(Rear == NULL){ //if our queue is currently empty
+                Front = new Node<T>;
+                Front -> set_data(info);
+                Rear = Front;
+                Rear -> set_next(NULL);
+                Front -> set_next(NULL);
+                Size = 1;
+            }
+            else{ //if not empty add to the end and move the 
+                Node<T>* temp = new Node<T>;
+                temp->set_data(info);
+                temp->set_next(NULL);
+
+                Node<T>* current_node = this -> Front;
+                while (current_node->next != NULL){
+                    current_node = current_node->next; 
+                }
+                
+                current_node->next = temp; // Rear va ser temp.
+                
+                Rear = temp; // temp lo establecemos como Rear.
+                //Rear -> set_data(temp -> data); // Por si acaso, Rear tenga el valor de temp.
+                
+                Size++; // Incrementar el valor de size.
+            }
+        }
+
+        // Sacar o devolver el primer elemento.
+        void pop(){
+            if(!this->Rear){
+                // Empty queue, no values to delete
+                return;
+            }
+            Node<T>* current_node = this->Front;
+            current_node = current_node -> next;
+            delete Front;
+            Front = current_node;
+            Front -> set_data(current_node -> data);
+            Size--; // Restar Size menos 1.
+        }
+
+        // empty
+        bool empty(){
+            if(Size > 0){
+                return false;
+            } else {
+                return true;
+            }
+        }
+
+        // size
+        int size(){
+            return Size;
+        }
+
+        int front(){
+            return Front;
+        }
+
+        int back(){
+            return Rear -> data;
+        }
+
+        void print_list(){
+            cout << "funciona print" << endl;
+            Node<T>* current_node = this->Front;
+            while (current_node != NULL){
+                cout << current_node ->data << " -> ";
+                current_node = current_node->next;
+            }
+            cout << endl;
+        }
+
+        
 };
 
 template <class T> class BinaryTree{
@@ -127,7 +237,7 @@ template <class T> class BinaryTree{
             this -> post_order();
             cout << endl;
         } else if(opc == 4){
-            this -> levelBLevel();
+            this -> levelBylevel();
             cout << endl;
         }
         cout << endl;
@@ -168,23 +278,23 @@ template <class T> class BinaryTree{
             current = current -> father;
         }
         if(current -> right != NULL){
-            current = current -> right();
+            current = current -> right;
             this -> post_order();
-            current = current -> father();
+            current = current -> father;
         }
         cout << current -> data << " ";
     }
 
-    void levelBLevel(){
+    void levelBylevel(){
         Node<T>* temp = new Node<T>;
-        queue<Node> q;
-        q.push(current);
-        while(!q.empty()){
+        queue<Node<T>*> q;
+        q.push(root);
+        while(q.size() > 0){
             temp = q.front();
-            q.pop();
             cout << temp -> data << " ";
+            q.pop();
             if(temp -> left != NULL){
-                q.push(temp->left);
+                q.push(temp -> left);
             }
             if(temp -> right != NULL){
                 q.push(temp -> right);

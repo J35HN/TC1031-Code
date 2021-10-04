@@ -57,7 +57,7 @@ template <class T> class CustomStack{
                 temp -> set_prev(top); 
                 this -> top = temp;
             }
-
+        }
         void pop(){
             if(top == NULL){
                 return;
@@ -65,8 +65,6 @@ template <class T> class CustomStack{
                 Stack<T>* temp = top -> get_prev();
                 top = temp;
             }
-        }
-
         }
 };
 
