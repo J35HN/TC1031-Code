@@ -224,6 +224,40 @@ template <class T> class BinaryTree{
         }
     }
 
+    void delete_node(T info){
+        int foundNode = 0;
+        // Search for node
+        current = root;
+        while(foundNode == 0){
+            if(current == NULL){
+                foundNode = -1;
+            } else if(info == current -> data){
+                foundNode = 1;
+            } else if(info > current -> data){
+                current = current -> right;
+            } else if (info < current -> data){
+                current = current -> left;
+            }
+        }
+        if(foundNode == 1){
+            // Find the case of deletion.
+            if(current -> left == NULL && current -> right == NULL){
+                // Caso 1
+                delete current;
+                current = NULL;
+            } /*else if (current -> left != NULL && current -> right != NULL){
+                // Caso 3
+                
+            } else {
+                // Caso 2
+
+            }*/
+        } else {
+            cout << "No se encontro el nodo..." << endl << endl;
+        }
+        current = root;
+    }
+
     // Visit
     void visit(int opc){
         current = root;
@@ -387,7 +421,7 @@ int main(){
     while(menu != 0){
         Arbol.print_node();
         cout << "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-" << endl;
-        cout << "1. Agregar un valor.\n2. Go father.\n3. Go left.\n4. Go right.\n5. Ancestor.\n6. What Level.\n7. Height.\n8. Visit.\n0. Salir.\nOpcion: ";
+        cout << "1. Agregar un valor.\n2. Go father.\n3. Go left.\n4. Go right.\n5. Ancestor.\n6. What Level.\n7. Height.\n8. Visit.\n9. Delete Node.\n0. Salir.\nOpcion: ";
         cin >> menu;
         cout << endl;
         switch (menu){
@@ -428,6 +462,12 @@ int main(){
                 cout << "[1] -> Pre-order. [2] -> In-order. [3] -> Postorder. [4] -> level by level." << endl;
                 cin >> temp;
                 Arbol.visit(temp);
+                break;
+            case 9:
+                cout << "Ingrese el valor del nodo a borrar: ";
+                cin >> temp;
+                cout << endl;
+                Arbol.delete_node(temp);
                 break;
             default:
                 cout << "Ingrese un numero valido" << endl << endl;
