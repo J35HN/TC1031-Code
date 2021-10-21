@@ -17,6 +17,7 @@ Fecha de creación y última modificación:
 #include <vector>
 #include <math.h>
 #include <unordered_map>
+#include <algorithm>
 
 using namespace std;
 
@@ -82,9 +83,10 @@ int tiempoDecimal(string linea){
 /**
  * 
  */
-long double ipDecimal(string linea){
-  string temp, ip;
+string ipFromLine(string linea){ //obtener el decimal de cada IP
+  string temp = "", ip = "";
   int pos = 0;
+  int suma = 0;
   temp = linea[14];
   if(temp == " "){//Ip comienza en 15
     pos = 15;
@@ -107,9 +109,9 @@ long double ipDecimal(string linea){
       temp = linea[pos];
     }
   }
-  cout << ip << endl;
-  return stold(ip);
+  return ip;
 }
+
 /**
  * Función que compara elementos de un vector y los ordena (parte del función Merge Sort).
  * Complejidad computacional: O(n).
@@ -152,6 +154,43 @@ void merge(vector<string>& V, int l, int m, int r){
     }
 }
 
+void mergeIp(vector<vector<string>>& V, int l, int m, int r){
+    vector<string> temp1, temp2; // Subarreglos temporales
+    vector<vector<string>> L, R;
+    int n1 = m-l+1, n2 = r-m, i = 0, j = 0, k = l;
+    for (int i=0; i<n1; i++){
+        L.push_back(V[l+i]);
+    }
+    for (int j=0; j<n2; j++){
+        R.push_back(V[m+j+1]);
+    }
+    i = j = 0;
+    temp1 = L[i];
+    temp2 = R[j];
+    while (i < n1 && j < n2){
+        temp1 = L[i];
+        temp2 = R[j];
+        if (stoi(temp1[1]) > stoi(temp2[1])){
+            V[k] = L[i];
+            i++;
+        } else {
+            V[k] = R[j];
+            j++;
+        }
+        k++;
+    }
+    while (i < n1){
+        V[k] = L[i];
+        i++;
+        k++;
+    }
+    while (j < n2){
+        V[k] = R[j];
+        j++;
+        k++;
+    }
+}
+
 /**
  * Ordena un vector con el algoritmo MergeSort.
  * Complejidad computacional (promedio): O(nLog n).
@@ -164,11 +203,32 @@ void merge(vector<string>& V, int l, int m, int r){
 void ordenaMerge(vector<string>& V, int l, int r){
     int m = 0;
     if (l<r){
-        m = floor(((l+r)/2));
-        ordenaMerge(V, l, m);
-        ordenaMerge(V, m+1, r);
-        merge(V, l, m, r);
+      m = floor(((l+r)/2));
+      ordenaMerge(V, l, m);
+      ordenaMerge(V, m+1, r);
+      merge(V, l, m, r);
     }
+    
+}
+
+/**
+ * Ordena un vector con el algoritmo MergeSort.
+ * Complejidad computacional (promedio): O(nLog n).
+ * Log n se obtiene por la sumatoria de las particiones de los sub-arreglos. Esto multiplicado por n de la parte merge.
+ * 
+ * @param V Vector tipo int que se desea ordenar.
+ * @param l Int index del inicio de un vector.
+ * @param r Int index del final de un vector (size - 1).
+ */
+void ordenaMergeIp(vector<vector<string>>& V, int l, int r){
+    int m = 0;
+    if (l<r){
+      m = floor(((l+r)/2));
+      ordenaMergeIp(V, l, m);
+      ordenaMergeIp(V, m+1, r);
+      mergeIp(V, l, m, r);
+    }
+    
 }
 
 /**
@@ -314,24 +374,33 @@ int busqBinaria(vector<string> V, int key){
     return index; // Retorna el índice más cercano al key. 
 }
 
-/**
- * 
- * 
- */
-int busqBinariaIP(vector<long double> V, long double key){
-    int l = 0, r = V.size()-1, index = 0;
-    while (r >= l){
-        index = floor((l+r)/2);
-        if (V[index] == key){
-            return index;
-        } else if (V[index] > key){
-            r = index - 1;
-        } else {
-            l = index + 1 ;
-        }
+
+void ordenaPorIP(vector<vector<string>>& V){
+  vector<string> IpUnicos, temp;
+  unordered_map<string, int> IPS;
+  int oc;
+  // Encontrar y definir las veces que se encuentra un IP en el vector.
+  for(int i=0; i < V.size(); i++){
+    temp = V[i];
+    if(IPS.count(ipFromLine(temp[0]))){
+      IPS[ipFromLine(temp[0])] += 1;
+    } else {
+      IPS[ipFromLine(temp[0])] = 1;
     }
-    return -1; // Retorna -1 si no lo encuentra.
+  }
+  // Actualizar los valores por cada línea.
+  for(int i=0; i < V.size(); i++){
+    temp = V[i];
+    if(IPS.count(ipFromLine(temp[0]))){
+      temp[1] = to_string(IPS[ipFromLine(temp[0])]);
+      cout << temp[0] << "-" << temp[1] << endl;
+      V[i] = temp;
+    }
+  }
+  // Ordenar el vector.
+  ordenaMergeIp(V, 0, V.size()-1);
 }
+
 /**
  * Función que despliega los registros en el rango de fechas, y los guarda en un archivo.
  * Complejidad computacional: O(n).
@@ -342,12 +411,13 @@ int busqBinariaIP(vector<long double> V, long double key){
  * @param numConsulta Números de consulta que se realizarán.
  */
 void guardaArchivo(vector<string> fechas, vector<string> bitacora, int numConsulta){
-  int inicio=0, fin=0, key;
+  int inicio=0, fin=0, key = 0, temp = 0;
   string consulta = "Consulta" + to_string(numConsulta+1) + ".txt";
-  vector<string> registros;
+  vector<string> registros, IpDia;
+  vector<vector<string>> IpsPorDia;
   
   // Consultar las fechas. Ver de donde empieza y donde termina para guardar estos registros en un vector.
-  // Buscamos el índice "start" (fecha de inicio) más cercano en bitacora
+  // Buscamos el índice "start" (fecha de inicio) más cercano en bitacora.
   key = stoi(fechas[0]); // ID de la fecha inicio.
   inicio = busqBinaria(bitacora, key); // Indice más cercano a la fecha inico.
   key = stoi(fechas[1]); // ID de la fecha fin.
@@ -359,25 +429,58 @@ void guardaArchivo(vector<string> fechas, vector<string> bitacora, int numConsul
     cout << "No se encontro ningun registro en el intervalo de fecha solicitado." << endl;
   }else{
     // Recorrer bitacora por estos indices, para guardar los registros en un vector.
-    int IP;
-    vector<long double> ipInDay;
-    vector<int> ocurrencias;
-    for(int i = inicio; i < fin+1; i++){
-      IP = busqBinariaIP(ipInDay, ipDecimal(bitacora[i]));
-      if(IP == -1) {
-        ipInDay.push_back(ipDecimal(bitacora[i]));
-        ocurrencias.push_back(1);
-      }else if(IP != -1){
-        ocurrencias[IP] += 1;
+    temp = tiempoDecimal(bitacora[inicio]);
+    IpDia.push_back(bitacora[inicio]);
+    IpDia.push_back("1");
+    IpsPorDia.push_back(IpDia);
+    IpDia.clear();
+    for(int i = inicio+1; i < fin+1; i++){
+      // Recorrer por días dentro de la bitacora.
+      temp -= tiempoDecimal(bitacora[i]);
+      if(temp < -235959){ // Detecta que cambió de día.
+        if( IpsPorDia.size() < 2){
+          IpDia = IpsPorDia[0];
+          registros.push_back(IpDia[0]);
+          IpDia.clear();
+          IpsPorDia.clear();
+        }else{
+          // Ordenamos por IP y luego por fecha a los registros en un día.
+          ordenaPorIP(IpsPorDia);
+          // Guardamos en registros las líneas de texto (consultas).
+          for(int e=0; e < IpsPorDia.size(); e++){
+            IpDia = IpsPorDia[e];
+            registros.push_back(IpDia[0]);
+            IpDia.clear();
+            temp = 0;
+          }
+          IpsPorDia.clear();
+        }
       }
-      
-      registros.push_back(bitacora[i]);// Pa que no se rompa
+      temp = tiempoDecimal(bitacora[i]);
+      IpDia.push_back(bitacora[i]);
+      IpDia.push_back("1");
+      IpsPorDia.push_back(IpDia);
+      IpDia.clear();      
     }
-    // registros tiene todas las líneas del archivo bitácora en las fechas solicitadas.
-    // Ordenen (o imprimir) por orden de: 1. Tiempo, 2. IP.
-    // Todas las líneas de un día que se guarden en un stack. Después de ordenarlos guardarlos en otro vector "main" como registros.
-
-    //
+    // Revisar si tiene datos IpsPorDia
+    if(IpsPorDia.size() > 0){
+      cout << "Hay en Ips por cual ordenar: " << IpsPorDia.size() << endl;
+      if( IpsPorDia.size() < 2){
+          IpDia = IpsPorDia[0];
+          registros.push_back(IpDia[0]);
+          IpDia.clear();
+        }else{
+          // Ordenamos por IP y luego por fecha a los registros en un día.
+          ordenaPorIP(IpsPorDia);
+          // Guardamos en registros las líneas de texto (consultas).
+          for(int e= 0; e < IpsPorDia.size(); e++){
+            IpDia = IpsPorDia[e];
+            registros.push_back(IpDia[0]);
+            IpDia.clear();
+          }
+          IpsPorDia.clear(); // Borrar los IP del día, para empezar con los nuevos.
+      }
+    }
     cout << endl << "-=-= Consulta " << numConsulta + 1 << " -=-=-=-=" << endl;
     cout<<"El vector tiene "<< registros.size() <<" registros"<<endl;
     if(registros.size()>10){
@@ -403,9 +506,6 @@ void guardaArchivo(vector<string> fechas, vector<string> bitacora, int numConsul
       for(int i=0; i < registros.size(); i++){
         cout << i + 1 << " - " << registros[i] << endl;
       }
-    }
-    for(int i = 0; i < ipInDay.size(); i++){
-        cout<< i << "- IP: " << ipInDay[i] << "  - ocurrencias: "<< ocurrencias[i] << endl; 
     }
     // Guarda un archivo .txt con los registros.
     cout << "Ya guarde los registros en el archivo " << consulta << endl; 
