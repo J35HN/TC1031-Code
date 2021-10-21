@@ -74,7 +74,7 @@ priority_queue::priority_queue(){
     sizeArr = 0;
 }
 
-/** Inrecambia dos valores en la dirección de otro.
+/** Intercambia dos valores en la dirección del otro.
  * Complejidad Computacional: O(1).
  * @param x Dirección de un valor a intercambiar.
  * @param y Dirección del otro valor a intercambiar.
@@ -97,7 +97,9 @@ void priority_queue::print_queue(){
 }
 
 /** Insertar un elemento dentro del arreglo heap.
- * Complejidad Computacional: [].
+ * Complejidad Computacional: Mejor caso -> O(1). Peor Caso -> O(n).
+ * Aveces inserta un elemento sin tener que organizar el arreglo acorde MAX HEAP. Pero de lo contario,
+ * si tiene que organizar el arreglo pueda que organice todo.
  * @param n Elemento que se quiere insertar.
  */
 void priority_queue::push(int n){
@@ -112,7 +114,7 @@ void priority_queue::push(int n){
     }
 }
 
-/** Borra el primer elemento del arreglo, lo cual después reacomoda el arreglo de manera recursiva.
+/** Borra el primer elemento del arreglo.
  * Complejidad Computacional: O(1).
  */
 void priority_queue::pop(){
