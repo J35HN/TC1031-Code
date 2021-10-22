@@ -37,34 +37,195 @@ template <class T> class TreeAVL{
         TreeAVL(){root = NULL;}
         ~TreeAVL(){}
 
-        void insert(Node<T>* current, Node<T>* insert);
+        // Métodos de inserción. [TERMINAR INSERCIÓN COMPLETA]
+        void insert(Node<T>* currentNode, Node<T>* insertNode);
         void insert(T data, int key);
+        void balanceTree(Node<T>* currentNode);
+        int heightNode(Node<T>* currentNode); // Encontrar la altura de un nodo.
+        int balanceFact(Node<T>* currentNode); // Obtener el balance factor de un nodo.
+        // Métodos de rotación.
+        void rotaRR(Node<T>* currentNode);
+        void rotaLL(Node<T>* currentNode);
+        void rotaRL(Node<T>* currentNode);
+        void rotaLR(Node<T>* currentNode);
 
-        // Métodos de impresión.
-        void pre_order(Node<T>* current);
+        // Deletion
+
+    // Métodos de impresión.
+        void pre_order(Node<T>* currentNode);
         void pre_order();
-        void in_order(Node<T>* current);
+        void in_order(Node<T>* currentNode);
         void in_order();
-        void post_order(Node<T>* current);
+        void post_order(Node<T>* currentNode);
         void post_order();
         void levelByLevel();
-
-        int heightNode(Node<T>* current); // Encontrar la altura de un nodo.
-
-
 };
+
+/**
+ * 
+ */
+template<class T>
+void TreeAVL<T>::insert(Node<T>* currentNode, Node<T>* insertNode){
+    Node<T> *nextNode = currentNode -> left;
+    Node<T> *temp;
+    bool toLeft = true;
+    if(insertNode -> key > currentNode -> key){
+        nextNode = currentNode -> right;
+        toLeft = false;
+    }
+    cout << "Current key:: " << currentNode -> key << endl;
+    if(nextNode){
+        insert(nextNode, insertNode);
+        cout << "A balancear. Mi ultimo key: " << insertNode -> key << " Ultimo current: " << currentNode -> key << endl;
+        balanceTree(currentNode);
+    } else if (toLeft == true){
+        cout << "Inserte LEFT: " << insertNode -> key << endl;
+        currentNode -> left = insertNode;
+    } else {
+        cout << "Inserte RIGTH: " << insertNode -> key << endl;
+        currentNode -> right = insertNode;
+    }
+}
+
+/**
+ * 
+ */
+template<class T>
+void TreeAVL<T>::insert(T data, int key){
+    Node<T> *InsertNode = new Node<T>(data, key);
+    if(root){
+        insert(root, InsertNode);
+    } else {
+        root = InsertNode;
+    }
+}
+
+/**
+ * 
+ */
+template<class T>
+void TreeAVL<T>::balanceTree(Node<T>* currentNode){
+    int bFactor = 0;
+    bFactor = balanceFact(currentNode);
+    if(bFactor > 1){
+        if (balanceFact(currentNode -> left) > 0){
+            rotaLL(currentNode);
+        } else {
+            rotaLR(currentNode);
+        }
+    } else if (bFactor < -1){
+        if (balanceFact(currentNode -> right) > 0){
+            rotaRL(currentNode);
+        } else {
+            rotaRR(currentNode);
+        }
+    }
+}
+
+/** Regresa la altura de un nodo.
+ * Complejidad Computacional: O(n).
+ * Aunque sea recursivo, un subárbol siempre tendrá n elementos.
+ * @param currentNode Nodo al cual se le va obtener su altura dentro del árbol.
+ * @return Entero que indica la altura del nodo.
+ */
+template<class T>
+int TreeAVL<T>::heightNode(Node<T>* currentNode){
+    int height = 0;
+    if(currentNode != NULL){
+        height = max(heightNode(currentNode -> left), heightNode(currentNode -> right));
+    }
+    return 1 + height;
+}
+
+/** Regresa el balance factor de un nodo dado.
+ * Complejidad Computacional: O(1).
+ * @param currentNode Nodo al cual se le quiere conocer su balance factor.
+ * @return Entero que indica su balance factor.
+ */
+template<class T>
+int TreeAVL<T>::balanceFact(Node<T>* currentNode){
+    int HL = heightNode(currentNode -> left);
+    int HR = heightNode(currentNode -> right);
+    return HL - HR;
+}
+
+/** Función para realizar la rotación RR.
+ * Complejidad Computacional: O(1).
+ * Nada más realizar una serie de pasos, no importa el tamaño del árbol.
+ * @param currentNode Nodo (o padre) al cual se le hara el RR.
+ * @return El Nodo con los sub-árboles acomodados.
+ */
+template<class T>
+void TreeAVL<T>::rotaRR(Node<T>* currentNode){
+    Node<T> *temp;
+    temp = currentNode -> right;
+    currentNode -> right = temp -> left;
+    temp -> left = currentNode;
+    cout << "RR al key: " << currentNode -> key << endl;
+    /*
+    if(currentNode == root){
+        root = temp;
+    }*/
+}
+
+/** Función para realizar la rotación LL.
+ * Complejidad Computacional: O(1).
+ * Nada más realizar una serie de pasos, no importa el tamaño del árbol.
+ * @param currentNode Nodo (o padre) al cual se le hara el LL.
+ * @return El Nodo con los sub-árboles acomodados.
+ */
+template<class T>
+void TreeAVL<T>::rotaLL(Node<T>* currentNode){
+    Node<T> *x = currentNode -> left;
+    Node<T> *rightX = x -> right;
+    x -> right = currentNode;
+    currentNode -> left = rightX;    
+    cout << "LL al key: " << currentNode -> key << endl;
+    /*
+    if(currentNode == root){
+        root = temp;
+    }*/
+}
+
+/** Función para realizar la rotación RL.
+ * Complejidad Computacional: O(1).
+ * Nada más realizar una serie de pasos, no importa el tamaño del árbol.
+ * @param currentNode Nodo (o padre) al cual se le hara el RL.
+ * @return El Nodo con los sub-árboles acomodados.
+ */
+template<class T>
+void TreeAVL<T>::rotaRL(Node<T>* currentNode){
+    currentNode -> right = currentNode -> right -> left -> left;
+    currentNode -> right -> left -> left = currentNode;
+    currentNode -> right -> left = currentNode -> right -> left -> right;
+}
+
+/** Función para realizar la rotación LR.
+ * Complejidad Computacional: O(1).
+ * Nada más realizar una serie de pasos, no importa el tamaño del árbol.
+ * @param currentNode Nodo (o padre) al cual se le hara el LR.
+ * @return El Nodo con los sub-árboles acomodados.
+ */
+template<class T>
+void TreeAVL<T>::rotaLR(Node<T>* currentNode){
+    currentNode -> left = currentNode -> left -> right -> right;
+    currentNode -> left -> right -> right = currentNode;
+    currentNode -> left -> right = currentNode -> left -> right -> left;
+}
 
 /** Imprime al árbol de manera Preorder.
  * Complejidad Computacional: O(n).
+ * @param currentNode Nodo en el que se encuentra travesando por el momento, y al cual se 
+ * va imprimir su valor.
  */
 template<class T>
-void TreeAVL<T>::pre_order(Node<T>* current){
-    cout << current -> key << " ";
-    if(current -> left != NULL){
-        pre_order(current -> left);
+void TreeAVL<T>::pre_order(Node<T>* currentNode){
+    cout << currentNode -> key << " ";
+    if(currentNode -> left != NULL){
+        pre_order(currentNode -> left);
     }
-    if(current -> right != NULL){
-        pre_order(current -> right);
+    if(currentNode -> right != NULL){
+        pre_order(currentNode -> right);
     }
 }
 
@@ -76,15 +237,17 @@ void TreeAVL<T>::pre_order(){
 
 /** Imprime al árbol de manera Inorder.
  * Complejidad Computacional: O(n).
+ * @param currentNode Nodo en el que se encuentra travesando por el momento, y al cual se 
+ * va imprimir su valor.
  */
 template<class T>
-void TreeAVL<T>::in_order(Node<T>* current){
-    if(current -> left != NULL){
-        in_order(current -> left);
+void TreeAVL<T>::in_order(Node<T>* currentNode){
+    if(currentNode -> left != NULL){
+        in_order(currentNode -> left);
     }
-    cout << current -> key << " ";
-    if(current -> right != NULL){
-        in_order(current -> right);
+    cout << currentNode -> key << " ";
+    if(currentNode -> right != NULL){
+        in_order(currentNode -> right);
     }
 }
 
@@ -96,16 +259,18 @@ void TreeAVL<T>::in_order(){
 
 /** Imprime al árbol de manera Postorder.
  * Complejidad Computacional: O(n).
+ * @param currentNode Nodo en el que se encuentra travesando por el momento, y al cual se 
+ * va imprimir su valor.
  */
 template<class T>
-void TreeAVL<T>::post_order(Node<T>* current){
-    if(current -> left != NULL){
-        post_order(current -> left);
+void TreeAVL<T>::post_order(Node<T>* currentNode){
+    if(currentNode -> left != NULL){
+        post_order(currentNode -> left);
     }
-    if(current -> right != NULL){
-        post_order(current -> right);
+    if(currentNode -> right != NULL){
+        post_order(currentNode -> right);
     }
-    cout << current -> key << " ";
+    cout << currentNode -> key << " ";
 }
 
 // Iniciador del post_order. Complejidad: O(1).
@@ -135,64 +300,15 @@ void TreeAVL<T>::levelByLevel(){
     }
 }
 
-/** Regresa la altura de un nodo.
- * Complejidad Computacional: O(n).
- * Aunque sea recursivo, un subárbol siempre tendrá n elementos.
- * @return Entero que indica la altura del nodo.
- */
-template<class T>
-int TreeAVL<T>::heightNode(Node<T>* currentNode){
-    int height = 0;
-    height = max(heightNode(currentNode -> left), heightNode(currentNode -> right));
-    return 1 + height;
-}
-
-/**
- * 
- */
-template<class T>
-void TreeAVL<T>::insert(Node<T>* currentNode, Node<T>* insertNode){
-    Node<T> * nextNode = currentNode -> left;
-    bool toLeft = true;
-    if(insertNode -> key > currentNode -> key){
-        nextNode = currentNode -> right;
-        toLeft = false;
-    }
-    if(nextNode != NULL){
-        insert(nextNode, insertNode);
-    } else if (toLeft == true){
-        currentNode -> left = insertNode;
-    } else {
-        currentNode -> right = insertNode;
-    }
-}
-
-/**
- * 
- */
-template<class T>
-void TreeAVL<T>::insert(T data, int key){
-    Node<T> *InsertNode = new Node<T>(data, key);
-    if(root == NULL){
-        root = InsertNode;
-    } else {
-        insert(root, InsertNode);
-    }
-}
 
 int main(){
     TreeAVL<int> h;
     h.insert(1, 100);
-    h.insert(2, 50);
-    h.insert(3, 150);
-    h.insert(4, 25);
-    h.insert(4, 125);
-    h.pre_order();
-    cout << endl;
-    h.in_order();
-    cout << endl;
-    h.post_order();
-    cout << endl;
+    h.insert(1, 200);
+    h.insert(1, 50);
+    h.insert(1, 25);
+    cout << "---INSERTANDO 12---" << endl;
+    h.insert(1, 12);
     h.levelByLevel();
     cout << endl;
     return 0;
